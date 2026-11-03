@@ -2,13 +2,17 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"io"
 	"os"
 )
 
 func main() {
-	res, err := count(os.Stdin)
+	lines := flag.Bool("l", false, "Count lines")
+	flag.Parse()
+
+	res, err := count(os.Stdin, *lines)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -16,19 +20,21 @@ func main() {
 	fmt.Println(res)
 }
 
-func count(r io.Reader) (int, error) {
+func count(r io.Reader, lines bool) (int, error) {
 	scanner := bufio.NewScanner(r)
-	scanner.Split(bufio.ScanWords)
 
-	wordcount := 0
+	if !lines {
+		scanner.Split(bufio.ScanWords)
+	}
+	count := 0
 
 	for scanner.Scan() {
-		wordcount++
+		count++
 	}
 
 	if err := scanner.Err(); err != nil {
 		return 0, err
 	}
 
-	return wordcount, nil
+	return count, nil
 }
